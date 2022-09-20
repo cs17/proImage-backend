@@ -17,27 +17,27 @@ class ImagesRepository {
         },
       };
 
-      // console.log('dynamoDb_get_params:', dynamoDb_get_params);
+      console.log('dynamoDb_get_params:', dynamoDb_get_params);
       let record = await dynamoDb.get(dynamoDb_get_params);
-      console.log('record:', record);
+      console.log('record (from DynamoDB):', record);
 
-      if (record.Item?.bucket && record.Item?.key) {
+      if (record.Item?.s3Bucket && record.Item?.s3Key) {
         let s3_get_params = {
-          Bucket: record.Item.bucket,
-          Key: record.Item.key,
+          Bucket: record.Item.s3Bucket,
+          Key: record.Item.s3Key,
         };
         // console.log('s3_get_params:', s3_get_params);
         // return s3.getObjectStream(s3_get_params);
         return s3.getObject(s3_get_params);
       } else {
-        throw 'imageID not found.';
+        throw 'imageId not found.';
       }
     } catch (error) {
       throw error;
     }
   }
 
-  async uploadImage(imageId, imageFileBase64, desc) {
+  async uploadImage(imagesHostURL, imageId, imageFileBase64, desc) {
     try {
       const base64Data = new Buffer.from(
         imageFileBase64.replace(/^data:image\/\w+;base64,/, ''),
@@ -58,13 +58,14 @@ class ImagesRepository {
         TableName: this.tableName,
         Item: {
           imageId: imageId,
-          bucket: this.bucketName,
-          key: `${imageId}.${type}`,
+          s3Bucket: this.bucketName,
+          s3Key: `${imageId}.${type}`,
           desc: desc,
         },
       };
       // console.log('dynamoDb_put_params:', dynamoDb_put_params);
-      return dynamoDb.put(dynamoDb_put_params);
+      await dynamoDb.put(dynamoDb_put_params);
+      return `${imagesHostURL}/${imageId}.${type}`;
     } catch (error) {
       throw error;
     }

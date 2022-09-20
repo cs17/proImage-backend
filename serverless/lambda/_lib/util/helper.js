@@ -8,10 +8,6 @@ exports.validateAJV = function (payload, schema) {
   return valid;
 };
 
-exports.getTimestamp = function () {
-  return Date.now();
-};
-
 exports.generateResponse = (statusCode, custom_headers, body, isBase64Encoded = false) => {
   let default_headers = {
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',

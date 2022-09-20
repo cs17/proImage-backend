@@ -41,10 +41,15 @@ exports.handler = async (event, context) => {
       process.env.ImagesBucketName,
       process.env.ImagesTableName,
     );
-    await imagesRepository.uploadImage(imageId, imageFileBase64, payload.desc);
+    let imageUrl = await imagesRepository.uploadImage(
+      process.env.ImagesHostURL,
+      imageId,
+      imageFileBase64,
+      payload.desc,
+    );
 
     // (6) Response unique imageID for identifier later
-    return helper.generateResponse(200, {}, { imageId: imageId }, false);
+    return helper.generateResponse(200, {}, imageUrl, false);
   } catch (error) {
     console.log('Encountered error:', error);
     return helper.generateResponse(500, {}, 'Internal Server Error', false);

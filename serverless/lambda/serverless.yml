@@ -62,6 +62,7 @@ provider:
       - '/'
   environment:
     # Common Environment Variables
+    ImagesHostURL: http://localhost:3000/dev/retrieve # DO NOT include (/) at the end
     ImagesTableName: Images # AWS DynamoDB Table Name
     ImagesBucketName: images-bucket # AWS S3 Bucket Name
 
@@ -79,7 +80,7 @@ functions:
     reservedConcurrency: 100
     events:
       - http:
-          path: /retrieve/{imageId}
+          path: /retrieve/{imageId}.{imageType}
           method: get
 
   uploadImage:
