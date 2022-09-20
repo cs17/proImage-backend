@@ -14,8 +14,8 @@ exports.handler = async (event, context) => {
       process.env.ImagesBucketName,
       process.env.ImagesTableName,
     );
-    let image = await imagesRepository.get(imageId);
-    console.log('image:', image);
+    let image = await imagesRepository.retrieve(imageId);
+    // console.log('image:', image);
 
     // (3) Check if the imageType is same as what we store in S3
     let imageFile;

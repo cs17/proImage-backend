@@ -1,4 +1,3 @@
-const path = require('path');
 const dynamoDb = require('../aws/dynamoDb.js');
 const s3 = require('../aws/s3.js');
 
@@ -8,7 +7,7 @@ class ImagesRepository {
     this.tableName = tableName;
   }
 
-  async get(imageId) {
+  async retrieve(imageId) {
     try {
       let dynamoDb_get_params = {
         TableName: this.tableName,
