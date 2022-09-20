@@ -8,22 +8,34 @@ class ImagesRepository {
     this.tableName = tableName;
   }
 
-  // async get(imageId) {
-  //   try {
-  //     let params = {
-  //       TableName: this.tableName,
-  //       Key: {
-  //         imageId: imageId,
-  //       },
-  //     };
+  async get(imageId) {
+    try {
+      let dynamoDb_get_params = {
+        TableName: this.tableName,
+        Key: {
+          imageId: imageId,
+        },
+      };
 
-  //     console.log('get', { params });
-  //     let result = await dynamoDb.get(params);
-  //     return result.Item ? result.Item : {};
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      // console.log('dynamoDb_get_params:', dynamoDb_get_params);
+      let record = await dynamoDb.get(dynamoDb_get_params);
+      console.log('record:', record);
+
+      if (record.Item?.bucket && record.Item?.key) {
+        let s3_get_params = {
+          Bucket: record.Item.bucket,
+          Key: record.Item.key,
+        };
+        // console.log('s3_get_params:', s3_get_params);
+        // return s3.getObjectStream(s3_get_params);
+        return s3.getObject(s3_get_params);
+      } else {
+        throw 'imageID not found.';
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async uploadImage(imageId, imageFileBase64, desc) {
     try {
@@ -39,7 +51,7 @@ class ImagesRepository {
         ContentEncoding: 'base64',
         ContentType: `image/${type}`, // required. Notice the back ticks
       };
-      console.log('s3_put_params:', s3_put_params);
+      // console.log('s3_put_params:', s3_put_params);
       await s3.putObject(s3_put_params);
 
       let dynamoDb_put_params = {
@@ -51,7 +63,7 @@ class ImagesRepository {
           desc: desc,
         },
       };
-      console.log('dynamoDb_put_params:', dynamoDb_put_params);
+      // console.log('dynamoDb_put_params:', dynamoDb_put_params);
       return dynamoDb.put(dynamoDb_put_params);
     } catch (error) {
       throw error;

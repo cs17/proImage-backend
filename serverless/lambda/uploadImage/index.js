@@ -1,8 +1,6 @@
-var bodySchema = require('./_schema/bodySchema.json');
 const helper = require('../_lib/util/helper.js');
-const ImagesTableName = 'Images';
-const ImagesBucketName = 'images-bucket';
 const ImagesRepository = require('../_lib/repository/ImagesRepository.js');
+var bodySchema = require('./_schema/bodySchema.json');
 const axios = require('axios').default;
 
 exports.handler = async (event, context) => {
@@ -39,25 +37,16 @@ exports.handler = async (event, context) => {
     }
 
     // (5) Upload to S3 and store imageInfo in DynamoDb
-    let imagesRepository = new ImagesRepository(ImagesBucketName, ImagesTableName);
+    let imagesRepository = new ImagesRepository(
+      process.env.ImagesBucketName,
+      process.env.ImagesTableName,
+    );
     await imagesRepository.uploadImage(imageId, imageFileBase64, payload.desc);
 
     // (6) Response unique imageID for identifier later
-    return generateResponse(200, { imageId: imageId });
+    return helper.generateResponse(200, {}, { imageId: imageId }, false);
   } catch (error) {
     console.log('Encountered error:', error);
-    return generateResponse(500, 'Internal Server Error');
+    return helper.generateResponse(500, {}, 'Internal Server Error', false);
   }
-};
-
-const generateResponse = (statusCode, body) => {
-  let response = {
-    statusCode: parseInt(statusCode),
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-    },
-  };
-  return response;
 };

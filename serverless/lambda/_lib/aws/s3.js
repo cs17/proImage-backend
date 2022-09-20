@@ -13,7 +13,6 @@ const s3 = new AWS.S3({
   endpoint: new AWS.Endpoint('http://localhost:4569'),
 });
 
-// From List object from buckets
 exports.listObject = async (params) => {
   try {
     /*
@@ -30,7 +29,6 @@ exports.listObject = async (params) => {
   }
 };
 
-// From Oject from buckets
 exports.getObject = async (params) => {
   try {
     /*
@@ -46,7 +44,21 @@ exports.getObject = async (params) => {
   }
 };
 
-// Put Object
+exports.getObjectStream = async (params) => {
+  try {
+    /*
+    let params = {
+        Bucket: bucketName,
+        Key: objectKey
+    };
+    */
+    return await s3.getObject(params).createReadStream();
+  } catch (error) {
+    log.error(error);
+    throw error;
+  }
+};
+
 exports.putObject = async (params) => {
   try {
     /*
