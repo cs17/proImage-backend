@@ -1,6 +1,6 @@
 const helper = require('../_lib/util/helper.js');
-const ImagesRepository = require('../_lib/repository/ImagesRepository.js');
 var bodySchema = require('./_schema/bodySchema.json');
+const ProgImageTools = require('progimage-tools');
 const axios = require('axios').default;
 
 exports.handler = async (event, context) => {
@@ -36,12 +36,11 @@ exports.handler = async (event, context) => {
       imageFileBase64 = 'data:' + image.headers['content-type'] + ';base64,' + raw;
     }
 
-    // (5) Upload to S3 and store imageInfo in DynamoDb
-    let imagesRepository = new ImagesRepository(
+    // (5) Use NPM library - Upload to S3 and store imageInfo in DynamoDb
+    let progImageTools = new ProgImageTools();
+    let imageUrl = await progImageTools.upload(
       process.env.ImagesBucketName,
       process.env.ImagesTableName,
-    );
-    let imageUrl = await imagesRepository.uploadImage(
       process.env.ImagesHostURL,
       imageId,
       imageFileBase64,

@@ -1,5 +1,6 @@
 const helper = require('../_lib/util/helper.js');
-const ImagesRepository = require('../_lib/repository/ImagesRepository.js');
+const ProgImageTools = require('progimage-tools');
+
 const Jimp = require('jimp');
 
 exports.handler = async (event, context) => {
@@ -9,12 +10,13 @@ exports.handler = async (event, context) => {
     const imageType = event.pathParameters.imageType;
     const greyscale = event.queryStringParameters?.greyscale;
 
-    // (2) Extract the file from AWS DynamoDB and AWS S3
-    let imagesRepository = new ImagesRepository(
+    // (2) Use NPM library - Extract the file from AWS DynamoDB and AWS S3
+    let progImageTools = new ProgImageTools();
+    let image = await progImageTools.retrieve(
       process.env.ImagesBucketName,
       process.env.ImagesTableName,
+      imageId,
     );
-    let image = await imagesRepository.retrieve(imageId);
     // console.log('image:', image);
 
     // (3) Check if the imageType is same as what we store in S3
