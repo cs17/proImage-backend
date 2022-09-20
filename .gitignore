@@ -102,3 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Serverless directories
+.serverless
+
+# Ignore package-lock
+*package-lock.json
+
+# Ignore local Images/FS
+.local

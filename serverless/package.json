@@ -1,0 +1,33 @@
+{
+  "name": "proimage-backend",
+  "version": "1.0.0",
+  "description": "serverless APIs",
+  "scripts": {
+    "postinstall": "npx npm-recursive-install --skip-root",
+    "slsdeploy": "npm run slsdeploy-dev",
+    "slsdeploy-dev": "loop 'npx serverless deploy -v --stage dev'",
+    "slsdeploy-stg": "loop 'npx serverless deploy -v --stage stg'",
+    "slsdeploy-prd": "loop 'npx serverless deploy -v --stage prd'",
+    "test": "jest",
+    "test-silent": "jest --silent --coverage",
+    "offline": "cd ./lambda && ./sls-offline.sh"
+  },
+  "author": "",
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/jest/setEnvVars.js"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^27.4.3",
+    "loop": "^3.3.6",
+    "recursive-install": "^1.4.0",
+    "serverless": "2.67.0",
+    "serverless-offline": "^8.3.1",
+    "serverless-prune-plugin": "^1.5.1",
+    "serverless-stack-termination-protection": "^1.0.4"
+  },
+  "dependencies": {
+    "serverless-dynamodb-local": "^0.2.40"
+  }
+}
