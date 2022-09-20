@@ -1,4 +1,5 @@
 let AWS;
+
 if (process.env._X_AMZN_TRACE_ID || process.env.AWS_XRAY_CONTEXT_MISSING) {
   AWS = require('aws-xray-sdk-core').captureAWS(require('aws-sdk'));
 } else {
@@ -6,17 +7,12 @@ if (process.env._X_AMZN_TRACE_ID || process.env.AWS_XRAY_CONTEXT_MISSING) {
   AWS = require('aws-sdk');
 }
 
-const https = require('https');
-const agent = new https.Agent({
-  keepAlive: true,
-});
-
 AWS.config.maxRetries = 2;
 const dbClient = new AWS.DynamoDB.DocumentClient({
-  region: 'ap-southeast-1',
-  httpOptions: {
-    agent,
-  },
+  region: 'localhost',
+  endpoint: 'http://localhost:8000',
+  accessKeyId: 'DEFAULT_ACCESS_KEY', // needed if you don't have aws credentials at all in env
+  secretAccessKey: 'DEFAULT_SECRET', // needed if you don't have aws credentials at all in env
 });
 
 exports.scan = async function (params) {
@@ -57,8 +53,4 @@ exports.delete = function (params) {
 
 exports.update = function (params) {
   return dbClient.update(params).promise();
-};
-
-exports.unmarshall = function (obj) {
-  return AWS.DynamoDB.Converter.unmarshall(obj);
 };

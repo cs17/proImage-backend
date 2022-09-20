@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "base64": {
+      "type": "string",
+      "pattern": "^data:image/([a-zA-Z]*);base64,([^\"]*)"
+    },
+    "url": {
+      "type": "string"
+    },
+    "desc": {
+      "type": "string"
+    }
+  }
+}

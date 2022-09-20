@@ -108,6 +108,3 @@ dist
 
 # Ignore package-lock
 *package-lock.json
-
-# Ignore local Images/FS
-.local

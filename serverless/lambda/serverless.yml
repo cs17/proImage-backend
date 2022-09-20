@@ -6,7 +6,7 @@ plugins:
   - serverless-prune-plugin
   - serverless-stack-termination-protection
   - serverless-offline
-  - serverless-dynamodb-local
+  - serverless-s3-local
 
 package:
   individually: true
@@ -22,9 +22,18 @@ custom:
   prune:
     automatic: true
     includeLayers: true
-    number: 5	
-###### (END) Custom #########################################################################
+    number: 5
+  s3:
+    host: localhost
+    directory: /tmp
 
+resources:
+  Resources:
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: images-bucket
+###### (END) Custom #########################################################################
 
 ###### (START) Provider #########################################################################
 provider:
@@ -56,8 +65,18 @@ provider:
 # ############################################################################
 # ## (START) Functions
 functions:
-  # < --------------- (START) PGP ---------------> #
-  # File inbound - PGP Decryption
+  retrieveImage:
+    handler: ./retrieveImage/index.handler
+    package:
+      patterns:
+        - ./retrieveImage/**
+    description: Upload an Image and store into local
+    reservedConcurrency: 100
+    events:
+      - http:
+          path: /retrieve/{imageId}
+          method: get
+
   uploadImage:
     handler: ./uploadImage/index.handler
     package:
@@ -68,7 +87,7 @@ functions:
     events:
       - http:
           path: /upload
-          method: get
+          method: post
 # ## (END) Functions
 # ############################################################################
 
