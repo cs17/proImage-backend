@@ -39,7 +39,9 @@
 2. You should see your postman response with **200** and the response as below:
 
    ```
-   "http://localhost:3000/dev/retrieve/cl8bi7fao0002vbxp947k6kjw.jpeg"
+   {
+      "url": "http://localhost:3000/dev/retrieve/cl8bk38zb000bkyxp97wofjp0.jpeg"
+   }
    ```
 
 3. Go to your postman again, try hit this url `(GET) http://localhost:3000/dev/retrieve/{imageId}`.

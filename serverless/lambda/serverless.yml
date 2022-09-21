@@ -72,7 +72,7 @@ provider:
 # ## (START) Functions
 functions:
   retrieveImage:
-    handler: ./retrieveImage/index.handler
+    handler: ./retrieveImage/retrieve.handler
     package:
       patterns:
         - ./retrieveImage/**
@@ -84,7 +84,7 @@ functions:
           method: get
 
   uploadImage:
-    handler: ./uploadImage/index.handler
+    handler: ./uploadImage/upload.handler
     package:
       patterns:
         - ./uploadImage/**

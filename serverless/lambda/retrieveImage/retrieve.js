@@ -12,11 +12,18 @@ exports.handler = async (event, context) => {
 
     // (2) Use NPM library - Extract the file from AWS DynamoDB and AWS S3
     let progImageTools = new ProgImageTools();
-    let image = await progImageTools.retrieve(
-      process.env.ImagesBucketName,
-      process.env.ImagesTableName,
-      imageId,
-    );
+    let image;
+    try {
+      image = await progImageTools.retrieve(
+        process.env.ImagesBucketName,
+        process.env.ImagesTableName,
+        imageId,
+      );
+    } catch (error) {
+      console.log('error (retrieve):', error);
+      return helper.generateResponse(404, {}, 'Not found', false);
+    }
+
     // console.log('image:', image);
 
     // (3) Check if the imageType is same as what we store in S3

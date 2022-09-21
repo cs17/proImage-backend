@@ -14,7 +14,7 @@ exports.handler = async (event, context) => {
     } else {
       payload = JSON.parse(event.body);
     }
-    console.log('Body (JSON):', payload);
+    // console.log('Body (JSON):', payload);
 
     // (2) validate Schema
     if (!helper.validateAJV(payload, bodySchema)) {
@@ -48,7 +48,7 @@ exports.handler = async (event, context) => {
     );
 
     // (6) Response unique imageID for identifier later
-    return helper.generateResponse(200, {}, imageUrl, false);
+    return helper.generateResponse(200, {}, { url: imageUrl }, false);
   } catch (error) {
     console.log('Encountered error:', error);
     return helper.generateResponse(500, {}, 'Internal Server Error', false);
