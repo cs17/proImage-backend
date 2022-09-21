@@ -1,0 +1,99 @@
+service: proimage-backend
+projectDir: ../ # Boundary of a project in which service is configured. Influences file resolution
+frameworkVersion: '2'
+
+plugins:
+  - serverless-prune-plugin
+  - serverless-stack-termination-protection
+  - serverless-offline
+  - serverless-s3-local
+
+package:
+  individually: true
+  # package to include or exclude during serverless deployment (reduce indivitual package size)
+  patterns: [
+      '!./**', # Exclude everything
+      './_lib/**', # Common Library
+    ]
+
+###### (START) Custom #########################################################################
+custom:
+  # myStage: ${opt:stage, self:provider.stage}
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 5
+  s3:
+    host: localhost
+    directory: /tmp
+
+resources:
+  Resources:
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: images-bucket
+###### (END) Custom #########################################################################
+
+###### (START) Provider #########################################################################
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-southeast-1
+  iam:
+    role:
+      name: proImage-backend-app-role
+      statements:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action: '*'
+  stage: dev
+  tags:
+    Project-Code: proimage-backend
+    Environment: ${sls:stage}
+  versionFunctions: true # If `false` then turn off function versioning (Do not keep previous version).
+  tracing: # For X-Ray
+    # apiGateway: true # Can only be true if API Gateway is inside a stack.
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  memorySize: 2048 # Default memory size (You can overwrite it in function level)
+  timeout: 300 # Default timeout in seconds (You can overwrite it in function level) Note: API Gateway current maximum is 30 seconds
+  apiGateway:
+    binaryMediaTypes:
+      - '/'
+  environment:
+    # Common Environment Variables
+    ImagesHostURL: http://localhost:3000/dev/retrieve # DO NOT include (/) at the end
+    ImagesTableName: Images # AWS DynamoDB Table Name
+    ImagesBucketName: images-bucket # AWS S3 Bucket Name
+
+###### (END) Provider #########################################################################
+
+# ############################################################################
+# ## (START) Functions
+functions:
+  retrieveImage:
+    handler: ./retrieveImage/retrieve.handler
+    package:
+      patterns:
+        - ./retrieveImage/**
+    description: Upload an Image and store into local
+    reservedConcurrency: 100
+    events:
+      - http:
+          path: /retrieve/{imageId}.{imageType}
+          method: get
+
+  uploadImage:
+    handler: ./uploadImage/upload.handler
+    package:
+      patterns:
+        - ./uploadImage/**
+    description: Upload an Image and store into local
+    reservedConcurrency: 100
+    events:
+      - http:
+          path: /upload
+          method: post
+# ## (END) Functions
+# ############################################################################
+
