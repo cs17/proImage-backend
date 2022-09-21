@@ -41,8 +41,8 @@ exports.handler = async (event, context) => {
     let imageUrl = await progImageTools.upload(
       process.env.ImagesBucketName,
       process.env.ImagesTableName,
-      process.env.ImagesHostURL,
       imageId,
+      process.env.ImagesHostURL,
       imageFileBase64,
       payload.desc,
     );
