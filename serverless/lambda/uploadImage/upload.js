@@ -1,6 +1,8 @@
 const helper = require('../_lib/util/helper.js');
 var bodySchema = require('./_schema/bodySchema.json');
 const ProgImageTools = require('progimage-tools');
+const https = require('https');
+const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // DO NOT DO THIS IF SHARING PRIVATE DATA WITH SERVICE
 const axios = require('axios').default;
 
 exports.handler = async (event, context) => {
@@ -31,7 +33,7 @@ exports.handler = async (event, context) => {
       imageFileBase64 = payload.base64;
     } else {
       // If user didn't provide the base64 Image.
-      let image = await axios.get(payload.url, { responseType: 'arraybuffer' });
+      let image = await axios.get(payload.url, { httpsAgent, responseType: 'arraybuffer' });
       let raw = Buffer.from(image.data).toString('base64');
       imageFileBase64 = 'data:' + image.headers['content-type'] + ';base64,' + raw;
     }
