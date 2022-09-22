@@ -4,13 +4,19 @@
 
 1. Setup local Docker for AWS DynamoDB, please refer to _Step C. (Pre - One time setup) Setup Docker For AWS DynamoDb_ below.
 
-2. Open your CLI, go to `proImage-backend/serverless/lambda`, run this command to start serverless offline:
+2. Go to `proImage-backend/serverless`, run npm install
+
+   ```
+   npm install
+   ```
+
+3. Open your CLI, go to `proImage-backend/serverless/lambda`, run this command to start serverless offline:
 
    ```
    serverless offline --stage dev
    ```
 
-3. Make sure AWS S3 started locally by accessing this url: `http://127.0.0.1:4569/images-bucket`.
+4. Make sure AWS S3 started locally by accessing this url: `http://127.0.0.1:4569/images-bucket`.
 
 ---
 
