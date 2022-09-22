@@ -54,7 +54,7 @@ describe('(A) Test Upload', () => {
     };
 
     const result = await main_upload.handler(event, context);
-    expect(result.statusCode).toBe(500);
+    expect(result.statusCode).toBe(400);
   });
 });
 

@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
 
     // (2) validate Schema
     if (!helper.validateAJV(payload, bodySchema)) {
-      throw 'Schema Check failed';
+      return helper.generateResponse(400, {}, 'Bad Request', false);
     }
 
     // (3) Assign an unique ID for ImageID (unique per invoke)
