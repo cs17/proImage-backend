@@ -77,8 +77,8 @@ describe('(B) Test Retrieve', () => {
     jest.restoreAllMocks();
   });
 
-  // 1. Positive - Retrieve Image via valid imageId
-  it('1. Positive - Retrieve Image via URL', async () => {
+  // 1. Positive - Retrieve Image via URL - JPEG
+  it('1. Positive - Retrieve Image via URL - JPEG', async () => {
     let event = {
       pathParameters: {
         imageId: 'cl8bivo160002v8xp7u4v1pko',
@@ -90,8 +90,8 @@ describe('(B) Test Retrieve', () => {
     expect(result.statusCode).toBe(200);
   });
 
-  // 2. Positive - Retrieve Image via valid imageId (with greyscale)
-  it('2. Positive - Retrieve Image via valid imageId (with greyscale)', async () => {
+  // 2. Positive - Retrieve Image via valid imageId - JPEG (with greyscale)
+  it('2. Positive - Retrieve Image via valid imageId - JPEG (with greyscale)', async () => {
     let event = {
       pathParameters: {
         imageId: 'cl8bivo160002v8xp7u4v1pko',
@@ -104,22 +104,35 @@ describe('(B) Test Retrieve', () => {
     expect(result.statusCode).toBe(200);
   });
 
-  // 3. Positive - Retrieve Image via valid imageId (with greyscale) - PNG
-  it('3. Positive - Retrieve Image via valid imageId (with greyscale)', async () => {
+  // 3. Positive - Retrieve Image via valid imageId - JPEG (with resize)
+  it('3. Positive - Retrieve Image via valid imageId - JPEG (with resize)', async () => {
+    let event = {
+      pathParameters: {
+        imageId: 'cl8bivo160002v8xp7u4v1pko',
+        imageType: 'jpeg',
+      },
+      queryStringParameters: { resizeH: '250', resizeW: '250' },
+    };
+
+    const result = await main_retrieve.handler(event, context);
+    expect(result.statusCode).toBe(200);
+  });
+
+  // 4. Positive - Retrieve Image via valid imageId - PNG
+  it('4. Positive - Retrieve Image via valid imageId - PNG', async () => {
     let event = {
       pathParameters: {
         imageId: 'cl8bivo160002v8xp7u4v1pko',
         imageType: 'png',
       },
-      queryStringParameters: { greyscale: 'true' },
     };
 
     const result = await main_retrieve.handler(event, context);
     expect(result.statusCode).toBe(200);
   });
 
-  // 4. Positive - Retrieve Image via valid imageId (with greyscale) - BMP
-  it('4. Positive - Retrieve Image via valid imageId (with greyscale)', async () => {
+  // 5. Positive - Retrieve Image via valid imageId - BMP
+  it('5. Positive - Retrieve Image via valid imageId - BMP', async () => {
     let event = {
       pathParameters: {
         imageId: 'cl8bivo160002v8xp7u4v1pko',
@@ -132,8 +145,8 @@ describe('(B) Test Retrieve', () => {
     expect(result.statusCode).toBe(200);
   });
 
-  // 5. Negative - Retrieve Image via invalid imageId
-  it('5. Negative - Retrieve Image via invalid imageId', async () => {
+  // 6. Negative - Retrieve Image via invalid imageId
+  it('6. Negative - Retrieve Image via invalid imageId', async () => {
     let event = {
       pathParameters: {
         imageId: 'XXXX',
