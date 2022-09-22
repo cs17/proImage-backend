@@ -1,8 +1,93 @@
 # proImage-backend
 
-## A. Run Serverless Offline
+## Description:
 
-1. Setup local Docker for AWS DynamoDB, please refer to _Step C. (Pre - One time setup) Setup Docker For AWS DynamoDb_ below.
+This demo application illustrate 2 APIs (/upload and /retrieve) that allow our client to perform these actions:
+
+- **Upload** - It allows our client to upload an image via a **remote URL** or an **image directly**. The API will store the image file into **AWS S3** and a record of the entry into **AWS DynamoDB**. A **unique identifier** (URL) will return in the API response to allow our client to retrieve the image at a later stage.
+
+- **Retrieve** - It allows our client to retrieve an image that our client uploaded earlier and **transform the image type** formats (e.g. PNG, JPEG or BMP) and **greyscale** the image if needed.
+
+The underlying APIs are developed using:
+
+- AWS Lambda, API Gateway, S3 and DynamoDB.
+- NodeJS / NPM
+- Serverless Framework (https://www.serverless.com/). It allows us to quickly deploy to AWS or other CSPs (Cloud Service Providers) using a single framework.
+- Jest automated tests.
+
+---
+
+## Usage:
+
+### A. (Pre - One time setup) Setup Docker For AWS DynamoDb
+
+1. Download Docker Destop (Ref: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html#docker)
+2. Go to file `docker-compose.yml` located in `proImage-backend/local-dynamoDb-docker`, run this command in the same directory:
+   ```
+   docker-compose up
+   ```
+3. Test the connection to AWS DynamoDB, run this command in your CLI:
+
+   ```
+   aws dynamodb list-tables --endpoint-url http://localhost:8000
+   ```
+
+   You should be see the result as this,
+
+   ```
+   {
+    "TableNames": [
+        "Images"
+    ]
+   }
+   ```
+
+4. Create table for Images info, run this command in your CLI:
+
+   ```
+   aws dynamodb create-table --endpoint-url http://localhost:8000 \
+   --table-name Images \
+   --attribute-definitions \
+       AttributeName=imageId,AttributeType=S \
+   --key-schema AttributeName=imageId,KeyType=HASH \
+   --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+   ```
+
+5. Create two(2) records in Images table, run this command in your CLI:
+
+   ```
+   aws dynamodb put-item --endpoint-url http://localhost:8000 \
+   --table-name Images \
+   --item \
+       '{"imageId": {"S": "001"}, "desc": {"S": "Testing uploaded image for test 001"}}' \
+   --return-consumed-capacity TOTAL
+   ```
+
+   and,
+
+   ```
+   aws dynamodb put-item --endpoint-url http://localhost:8000 \
+   --table-name Images \
+   --item \
+       '{"imageId": {"S": "002"}, "desc": {"S": "Testing uploaded image for test 002"}}' \
+   --return-consumed-capacity TOTAL
+   ```
+
+6. Scan entire table.
+
+   ```
+   aws dynamodb scan --endpoint-url http://localhost:8000 --table-name Images
+   ```
+
+7. (Do not execute) Delete the entire table in AWS DynamoDB if needed.
+   ```
+    aws dynamodb delete-table --endpoint-url http://localhost:8000 \
+        --table-name Images
+   ```
+
+### B. Run Serverless Offline
+
+1. Setup local Docker for AWS DynamoDB, please refer to _Step A. (Pre - One time setup) Setup Docker For AWS DynamoDb_ below.
 
 2. Go to `proImage-backend/serverless`, run npm install
 
@@ -20,7 +105,7 @@
 
 ---
 
-## B. Test the APIs
+### C. Test the APIs
 
 1. Go to your postman, try hit this url `(POST) http://localhost:3000/dev/upload/` with this **JSON** body:
 
@@ -63,57 +148,3 @@
    ```
 
 ---
-
-## C. (Pre - One time setup) Setup Docker For AWS DynamoDb
-
-1. Download Docker Destop (Ref: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html#docker)
-2. Go to file `docker-compose.yml` located in `proImage-backend/local-dynamoDb-docker`, run this command in the same directory:
-   ```
-   docker-compose up
-   ```
-3. Test the connection to AWS DynamoDB, run this command in your CLI:
-   ```
-   aws dynamodb list-tables --endpoint-url http://localhost:8000
-   ```
-4. Create table for Images info, run this command in your CLI:
-
-   ```
-   aws dynamodb create-table --endpoint-url http://localhost:8000 \
-   --table-name Images \
-   --attribute-definitions \
-       AttributeName=imageId,AttributeType=S \
-   --key-schema AttributeName=imageId,KeyType=HASH \
-   --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
-   ```
-
-5. Create two(2) records in Images table, run this command in your CLI:
-
-   ```
-   aws dynamodb put-item --endpoint-url http://localhost:8000 \
-   --table-name Images \
-   --item \
-       '{"imageId": {"S": "001"}, "desc": {"S": "Testing uploaded image for test 001"}}' \
-   --return-consumed-capacity TOTAL
-   ```
-
-   and,
-
-   ```
-   aws dynamodb put-item --endpoint-url http://localhost:8000 \
-   --table-name Images \
-   --item \
-       '{"imageId": {"S": "002"}, "desc": {"S": "Testing uploaded image for test 002"}}' \
-   --return-consumed-capacity TOTAL
-   ```
-
-6. Scan entire table.
-
-   ```
-   aws dynamodb scan --endpoint-url http://localhost:8000 --table-name Images
-   ```
-
-7. (Do not execute) Delete the entire table.
-   ```
-    aws dynamodb delete-table --endpoint-url http://localhost:8000 \
-        --table-name Images
-   ```
