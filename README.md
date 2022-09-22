@@ -6,7 +6,7 @@ This demo application illustrate 2 APIs (/upload and /retrieve) that allow our c
 
 - **Upload** - It allows our client to upload an image via a **remote URL** or an **image directly**. The API will store the image file into **AWS S3** and a record of the entry into **AWS DynamoDB**. A **unique identifier** (URL) will return in the API response to allow our client to retrieve the image at a later stage.
 
-- **Retrieve** - It allows our client to retrieve an image that our client uploaded earlier and **transform the image type** formats (e.g. PNG, JPEG or BMP) and **greyscale** the image if needed.
+- **Retrieve** - It allows our client to retrieve an image that our client uploaded earlier and **transform the image type** formats (e.g. PNG, JPEG or BMP), **resize** and **greyscale** the image if needed.
 
 The underlying APIs are developed using:
 
@@ -143,8 +143,8 @@ The underlying APIs are developed using:
 
    You should be seeing the image that you uploaded just now.
 
-4. Try repeat Step 3 again with query param **greyscale** is true
+4. Try repeat Step 3 again with query param **greyscale** and **resize** features.
 
-   `(GET) http://localhost:3000/dev/retrieve/cl8bif8ss000bvbxpbt4p3h3r.jpeg?greyscale=true`
+   `(GET) http://localhost:3000/dev/retrieve/cl8bif8ss000bvbxpbt4p3h3r.jpeg?greyscale=true&resizeH=100&resizeW=200`
 
 ---

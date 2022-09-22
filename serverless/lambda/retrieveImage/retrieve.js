@@ -9,6 +9,8 @@ exports.handler = async (event, context) => {
     const imageId = event.pathParameters.imageId;
     const imageType = event.pathParameters.imageType;
     const greyscale = event.queryStringParameters?.greyscale;
+    const resizeW = event.queryStringParameters?.resizeW;
+    const resizeH = event.queryStringParameters?.resizeH;
 
     // (2) Use NPM library - Extract the file from AWS DynamoDB and AWS S3
     let progImageTools = new ProgImageTools();
@@ -28,7 +30,12 @@ exports.handler = async (event, context) => {
 
     // (3) Check if the imageType is same as what we store in S3
     let imageFile;
-    if (image.ContentType === `image/${imageType}` && greyscale !== 'true') {
+    if (
+      image.ContentType === `image/${imageType}` &&
+      greyscale !== 'true' &&
+      !resizeW &&
+      !resizeH
+    ) {
       // (3a) Check if it's requesting for same file - do nothing
       console.log(`The imageType is same as requested (${imageType}).`);
       imageFile = image.Body.toString('base64');
@@ -53,6 +60,15 @@ exports.handler = async (event, context) => {
         .then((jimpImage) => {
           if (greyscale === 'true') {
             jimpImage.greyscale(); // set greyscale
+          }
+
+          if (
+            parseInt(resizeW) > 0 &&
+            parseInt(resizeW) <= 2048 &&
+            parseInt(resizeH) > 0 &&
+            parseInt(resizeH) <= 2048
+          ) {
+            jimpImage.resize(parseInt(resizeW), parseInt(resizeH)); // set resize
           }
           return jimpImage.getBufferAsync(mimiTypeForJimp); // save to buffer
         })
